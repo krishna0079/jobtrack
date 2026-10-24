@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}JobTrack — Manage your job applications, track interviews, and organize your job search from one professional platform.{% endblock %}">
+  <title>{% block title %}JobTrack{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  {% block navbar %}
+  <nav class="jt-navbar" role="navigation" aria-label="Main navigation">
+    <div class="jt-container">
+      <a href="{% if request.session.user_id %}/dashboard/{% else %}/{% endif %}" class="jt-navbar-brand">
+        Job<span>Track</span>
+      </a>
+
+      {% if request.session.user_id %}
+      <button class="jt-hamburger" id="jt-hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
+      <ul class="jt-nav-links" id="jt-nav-links">
+        <li><a href="/dashboard/" class="{% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
+        <li><a href="/jobs/" class="{% if '/jobs' in request.path %}active{% endif %}">Jobs</a></li>
+        <li><a href="/applications/" class="{% if '/applications' in request.path %}active{% endif %}">My Applications</a></li>
+        <li><a href="/interviews/" class="{% if '/interviews' in request.path %}active{% endif %}">Interviews</a></li>
+        <li><a href="/saved-jobs/" class="{% if request.path == '/saved-jobs/' %}active{% endif %}">Saved</a></li>
+        <li>
+          <a href="/notifications/" class="{% if '/notifications' in request.path %}active{% endif %}">
+            Notifications
+            {% if unread_notifications_count > 0 %}
+            <span class="jt-notif-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </a>
+        </li>
+        <li><a href="/profile/" class="{% if request.path == '/profile/' %}active{% endif %}">Profile</a></li>
+        {% if request.session.user_role == 'admin' %}
+        <li><a href="/admin-panel/dashboard/">Admin</a></li>
+        {% endif %}
+        <li><a href="/logout/" style="color: var(--danger);">Logout</a></li>
+      </ul>
+      {% else %}
+      <div class="jt-nav-auth">
+        <a href="/login/" class="jt-btn jt-btn-outline jt-btn-sm">Sign In</a>
+        <a href="/register/" class="jt-btn jt-btn-primary jt-btn-sm">Get Started</a>
+      </div>
+      {% endif %}
+    </div>
+  </nav>
+  {% endblock %}
+
+  {% if messages %}
+  <div class="jt-alerts" role="alert">
+    {% for message in messages %}
+    <div class="jt-alert jt-alert--{{ message.tags }}">
+      <span>{{ message }}</span>
+      <button class="jt-alert-close" aria-label="Close">&times;</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  {% block footer %}
+  <footer class="jt-footer">
+    <div class="jt-container">
+      <p>JobTrack &mdash; Your Professional Job Application Manager</p>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

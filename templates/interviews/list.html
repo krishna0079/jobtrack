@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Interviews — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Interviews</h1>
+        <p class="jt-section-subtitle">{{ total }} interview{{ total|pluralize }} total</p>
+      </div>
+    </div>
+
+    {% if upcoming %}
+    <h2 style="font-size:1.125rem; margin-bottom:16px;">Upcoming</h2>
+    {% for iv in upcoming %}
+    <div class="jt-interview-card">
+      <div style="display:flex; align-items:center; gap:16px; flex:1;">
+        <div class="jt-interview-date">
+          <div class="jt-interview-date-day">{{ iv.date_display|slice:":2" }}</div>
+          <div class="jt-interview-date-month">{{ iv.date_display|slice:"3:" }}</div>
+        </div>
+        <div>
+          <div style="font-weight:600; font-size:0.9375rem;">{{ iv.role }}</div>
+          <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700;">{{ iv.company }}</div>
+          <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700;">{{ iv.time }} &middot; {{ iv.type|title }}{% if iv.location %} &middot; {{ iv.location }}{% endif %}</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        {% if iv.meeting_link %}<a href="{{ iv.meeting_link }}" target="_blank" class="jt-btn jt-btn-primary jt-btn-sm">Join</a>{% endif %}
+        <a href="/interviews/{{ iv.id }}/" class="jt-btn jt-btn-outline jt-btn-sm">Details</a>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if past %}
+    <h2 style="font-size:1.125rem; margin: 32px 0 16px;">Past</h2>
+    {% for iv in past %}
+    <div class="jt-interview-card" style="opacity:0.85;">
+      <div style="display:flex; align-items:center; gap:16px; flex:1;">
+        <div class="jt-interview-date">
+          <div class="jt-interview-date-day">{{ iv.date_display|slice:":2" }}</div>
+          <div class="jt-interview-date-month">{{ iv.date_display|slice:"3:" }}</div>
+        </div>
+        <div>
+          <div style="font-weight:700; font-size:0.9375rem;">{{ iv.role }}</div>
+          <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700;">{{ iv.company }}</div>
+        </div>
+      </div>
+      <a href="/interviews/{{ iv.id }}/" class="jt-btn jt-btn-ghost jt-btn-sm">View</a>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if not upcoming and not past %}
+    <div class="jt-empty">
+      <h3>No interviews scheduled</h3>
+      <p>When you receive interview invitations, add the details here to keep track.</p>
+      <a href="/applications/" class="jt-btn jt-btn-primary">View Applications</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

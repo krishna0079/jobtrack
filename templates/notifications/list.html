@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Notifications — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container" style="max-width: 800px;">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Notifications</h1>
+        <p class="jt-section-subtitle">{{ unread_count }} unread</p>
+      </div>
+      {% if unread_count > 0 %}
+      <button class="jt-btn jt-btn-ghost jt-btn-sm" id="mark-all-read">Mark all as read</button>
+      {% endif %}
+    </div>
+
+    {% if notifications %}
+      {% for notif in notifications %}
+      <div class="jt-notif-item {% if not notif.is_read %}jt-notif-item--unread{% endif %}">
+        {% if not notif.is_read %}
+        <div class="jt-notif-dot"></div>
+        {% endif %}
+        <div class="jt-notif-content">
+          <div class="jt-notif-title">{{ notif.title }}</div>
+          <div class="jt-notif-message">{{ notif.message }}</div>
+          <div class="jt-notif-time">{{ notif.created_at_display }}</div>
+        </div>
+        {% if not notif.is_read %}
+        <button class="jt-btn jt-btn-ghost jt-btn-sm jt-notif-mark-read" data-id="{{ notif.id }}">Mark read</button>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="jt-empty">
+      <h3>All caught up</h3>
+      <p>No notifications to display. We'll notify you about important updates here.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

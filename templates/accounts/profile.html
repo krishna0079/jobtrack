@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}Profile — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">My Profile</h1>
+        <p class="jt-section-subtitle">Manage your professional information</p>
+      </div>
+      <button class="jt-btn jt-btn-primary" onclick="document.getElementById('profile-edit-modal').style.display='flex'">Edit Profile</button>
+    </div>
+
+    <div class="jt-grid-2">
+      <!-- Profile Info -->
+      <div class="jt-card">
+        <div class="jt-profile-header">
+          <div class="jt-profile-avatar">{{ user.name|first|upper }}</div>
+          <div class="jt-profile-info">
+            <h2>{{ user.name }}</h2>
+            <p>{{ user.email }}</p>
+            {% if user.auth_provider == 'google' %}
+            <span class="jt-badge jt-badge--applied" style="margin-top: 8px;">Google Account</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="jt-profile-section">
+          <h3>Contact Information</h3>
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Phone</span>
+            <span class="jt-profile-field-value">{{ user.phone|default:"Not set" }}</span>
+          </div>
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Location</span>
+            <span class="jt-profile-field-value">{{ user.location|default:"Not set" }}</span>
+          </div>
+        </div>
+
+        <div class="jt-profile-section">
+          <h3>Education</h3>
+          <p style="color: var(--text-primary); font-size: 0.875rem; font-weight:700;">{{ user.education|default:"Not specified"|linebreaksbr }}</p>
+        </div>
+
+        <div class="jt-profile-section">
+          <h3>Experience</h3>
+          <p style="color: var(--text-primary); font-size: 0.875rem; font-weight:700;">{{ user.experience|default:"Not specified"|linebreaksbr }}</p>
+        </div>
+
+        {% if user.resume %}
+        <div class="jt-profile-section">
+          <h3>Resume</h3>
+          <a href="{{ user.resume }}" class="jt-btn jt-btn-outline jt-btn-sm" target="_blank">View Resume</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Skills & About -->
+      <div>
+        <div class="jt-card" style="margin-bottom: 20px;">
+          <h3 style="margin-bottom: 16px;">Skills</h3>
+          {% if user.skills %}
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for skill in user.skills %}
+            <span class="jt-skill-tag">{{ skill }}</span>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p style="color: var(--text-primary); font-size: 0.875rem; font-weight:700;">No skills added yet. Edit your profile to add skills.</p>
+          {% endif %}
+        </div>
+
+        <div class="jt-card">
+          <h3 style="margin-bottom: 16px;">About</h3>
+          <p style="color: var(--text-primary); font-size: 0.875rem; font-weight:700; line-height: 1.7;">{{ user.profile_info|default:"No information provided."|linebreaksbr }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="profile-edit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center; padding:24px;">
+  <div class="jt-card" style="max-width:600px; width:100%; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <h2 style="font-size:1.25rem;">Edit Profile</h2>
+      <button class="jt-btn jt-btn-ghost jt-btn-sm" onclick="this.closest('#profile-edit-modal').style.display='none'">&times;</button>
+    </div>
+    <form method="POST" action="/profile/update/" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="jt-form-group">
+        <label class="jt-form-label" for="edit-name">Full Name</label>
+        <input class="jt-form-control" type="text" name="name" id="edit-name" value="{{ user.name }}" required>
+      </div>
+      <div class="jt-form-row">
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="edit-phone">Phone</label>
+          <input class="jt-form-control" type="tel" name="phone" id="edit-phone" value="{{ user.phone }}">
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="edit-location">Location</label>
+          <input class="jt-form-control" type="text" name="location" id="edit-location" value="{{ user.location }}">
+        </div>
+      </div>
+      <div class="jt-form-group">
+        <label class="jt-form-label" for="edit-skills">Skills</label>
+        <input class="jt-form-control" type="text" name="skills" id="edit-skills" value="{{ user.skills|join:', ' }}" placeholder="Python, Django, JavaScript">
+        <div class="jt-form-hint">Separate skills with commas</div>
+      </div>
+      <div class="jt-form-group">
+        <label class="jt-form-label" for="edit-education">Education</label>
+        <textarea class="jt-form-control" name="education" id="edit-education" rows="3">{{ user.education }}</textarea>
+      </div>
+      <div class="jt-form-group">
+        <label class="jt-form-label" for="edit-experience">Experience</label>
+        <textarea class="jt-form-control" name="experience" id="edit-experience" rows="3">{{ user.experience }}</textarea>
+      </div>
+      <div class="jt-form-group">
+        <label class="jt-form-label" for="edit-about">About</label>
+        <textarea class="jt-form-control" name="profile_info" id="edit-about" rows="3">{{ user.profile_info }}</textarea>
+      </div>
+      <div class="jt-form-group">
+        <label class="jt-form-label" for="edit-resume">Resume (PDF, DOC, DOCX — Max 5MB)</label>
+        <input class="jt-form-control" type="file" name="resume" id="edit-resume" accept=".pdf,.doc,.docx">
+      </div>
+      <button type="submit" class="jt-btn jt-btn-primary jt-btn-block">Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

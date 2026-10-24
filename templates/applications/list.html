@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}My Applications — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">My Applications</h1>
+        <p class="jt-section-subtitle">{{ total }} application{{ total|pluralize }} tracked</p>
+      </div>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <div style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+      <a href="/applications/" class="jt-btn {% if not status_filter %}jt-btn-primary{% else %}jt-btn-ghost{% endif %} jt-btn-sm">All ({{ total }})</a>
+      <a href="/applications/?status=applied" class="jt-btn {% if status_filter == 'applied' %}jt-btn-primary{% else %}jt-btn-ghost{% endif %} jt-btn-sm">Applied ({{ counts.applied }})</a>
+      <a href="/applications/?status=interview" class="jt-btn {% if status_filter == 'interview' %}jt-btn-primary{% else %}jt-btn-ghost{% endif %} jt-btn-sm">Interview ({{ counts.interview }})</a>
+      <a href="/applications/?status=selected" class="jt-btn {% if status_filter == 'selected' %}jt-btn-primary{% else %}jt-btn-ghost{% endif %} jt-btn-sm">Selected ({{ counts.selected }})</a>
+      <a href="/applications/?status=rejected" class="jt-btn {% if status_filter == 'rejected' %}jt-btn-primary{% else %}jt-btn-ghost{% endif %} jt-btn-sm">Rejected ({{ counts.rejected }})</a>
+    </div>
+
+    {% if applications %}
+    <div class="jt-table-wrapper">
+      <table class="jt-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Position</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+          <tr>
+            <td style="font-weight:600;">{{ app.company_name }}</td>
+            <td>{{ app.job_title }}</td>
+            <td>{{ app.applied_date_display }}</td>
+            <td><span class="jt-badge jt-badge--{{ app.status }}">{{ app.status|title }}</span></td>
+            <td>
+              <a href="/applications/{{ app.id }}/" class="jt-btn jt-btn-ghost jt-btn-sm">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="jt-empty">
+      <h3>No applications yet</h3>
+      <p>Start browsing jobs and mark them as applied to keep track of your progress.</p>
+      <a href="/jobs/" class="jt-btn jt-btn-primary">Browse Jobs</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

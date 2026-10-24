@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Manage Companies — JobTrack Admin{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Companies</h1>
+        <p class="jt-section-subtitle">{{ companies|length }} compan{{ companies|length|pluralize:"y,ies" }}</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="/admin-panel/companies/add/" class="jt-btn jt-btn-primary">Add Company</a>
+        <a href="/admin-panel/dashboard/" class="jt-btn jt-btn-ghost jt-btn-sm">Back</a>
+      </div>
+    </div>
+
+    {% if companies %}
+    <div class="jt-table-wrapper">
+      <table class="jt-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Industry</th>
+            <th>Location</th>
+            <th>Jobs</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in companies %}
+          <tr>
+            <td style="font-weight:600;">{{ c.name }}</td>
+            <td>{{ c.industry|default:"—" }}</td>
+            <td>{{ c.location|default:"—" }}</td>
+            <td>{{ c.job_count }}</td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <a href="/admin-panel/companies/{{ c.id }}/edit/" class="jt-btn jt-btn-ghost jt-btn-sm">Edit</a>
+                <form method="POST" action="/admin-panel/companies/{{ c.id }}/delete/">
+                  {% csrf_token %}
+                  <button type="submit" class="jt-btn jt-btn-danger jt-btn-sm" data-confirm="Delete {{ c.name }}?">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="jt-empty">
+      <h3>No companies yet</h3>
+      <p>Add companies to associate with job listings.</p>
+      <a href="/admin-panel/companies/add/" class="jt-btn jt-btn-primary">Add First Company</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}{{ job.title }} — JobTrack{% endblock %}
+{% block meta_description %}{{ job.title }} at {{ job.company_name }}. {{ job.location|default:"" }}. {{ job.experience|default:"" }}. Apply now on JobTrack.{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <a href="/jobs/" style="display:inline-flex; align-items:center; gap:6px; font-size:0.875rem; color:var(--text-primary); font-weight:700; margin-bottom:24px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Jobs
+    </a>
+
+    <div class="jt-grid-2" style="grid-template-columns: 2fr 1fr;">
+      <!-- Main Content -->
+      <div>
+        <div class="jt-detail-header">
+          <h1 class="jt-detail-title">{{ job.title }}</h1>
+          <div class="jt-detail-meta">
+            <span>{{ job.company_name }}</span>
+            <span>{{ job.location|default:"Remote" }}</span>
+            <span>{{ job.job_type|default:"Full Time" }}</span>
+            <span>{{ job.experience|default:"Any level" }}</span>
+          </div>
+        </div>
+
+        {% if job.description %}
+        <div class="jt-detail-section">
+          <h3>Description</h3>
+          <p>{{ job.description|linebreaksbr }}</p>
+        </div>
+        {% endif %}
+
+        {% if job.requirements %}
+        <div class="jt-detail-section">
+          <h3>Requirements</h3>
+          <p>{{ job.requirements|linebreaksbr }}</p>
+        </div>
+        {% endif %}
+
+        {% if job.skills %}
+        <div class="jt-detail-section">
+          <h3>Required Skills</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            {% for skill in job.skills %}
+            <span class="jt-skill-tag">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <div class="jt-card" style="position:sticky; top:96px;">
+          {% if job.salary %}
+          <div style="margin-bottom:20px;">
+            <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Salary</div>
+            <div style="font-size:1.25rem; font-weight:700; color:var(--text-primary);">{{ job.salary }}</div>
+          </div>
+          {% endif %}
+
+          {% if job.deadline_display %}
+          <div style="margin-bottom:20px;">
+            <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Deadline</div>
+            <div style="font-weight:600;">{{ job.deadline_display }}</div>
+          </div>
+          {% endif %}
+
+          {% if job.created_at_display %}
+          <div style="margin-bottom:24px;">
+            <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Posted</div>
+            <div style="font-weight:600;">{{ job.created_at_display }}</div>
+          </div>
+          {% endif %}
+
+          <!-- Actions -->
+          {% if request.session.user_id %}
+            {% if job.application_url %}
+            <a href="{{ job.application_url }}" target="_blank" rel="noopener noreferrer" class="jt-btn jt-btn-primary jt-btn-block jt-btn-lg" style="margin-bottom:12px;">Apply Now</a>
+            {% endif %}
+
+            {% if not is_applied %}
+            <form method="POST" action="/applications/mark-applied/{{ job.id }}/">
+              {% csrf_token %}
+              <input type="hidden" name="notes" value="Applied through official company website.">
+              <button type="submit" class="jt-btn jt-btn-accent jt-btn-block" style="margin-bottom:12px;">Mark as Applied</button>
+            </form>
+            {% else %}
+            <div class="jt-badge jt-badge--applied" style="width:100%; justify-content:center; padding:10px; margin-bottom:12px;">Already Applied</div>
+            {% endif %}
+
+            {% if not is_saved %}
+            <form method="POST" action="/jobs/{{ job.id }}/save/">
+              {% csrf_token %}
+              <button type="submit" class="jt-btn jt-btn-outline jt-btn-block">Save Job</button>
+            </form>
+            {% else %}
+            <form method="POST" action="/jobs/{{ job.id }}/unsave/">
+              {% csrf_token %}
+              <button type="submit" class="jt-btn jt-btn-ghost jt-btn-block">Remove from Saved</button>
+            </form>
+            {% endif %}
+          {% else %}
+          <a href="/login/" class="jt-btn jt-btn-primary jt-btn-block jt-btn-lg" style="margin-bottom:12px;">Sign In to Apply</a>
+          <a href="/register/" class="jt-btn jt-btn-outline jt-btn-block">Create Account</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Company — JobTrack Admin{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container" style="max-width: 640px;">
+    <a href="/admin-panel/companies/" style="display:inline-flex; align-items:center; gap:6px; font-size:0.875rem; color:var(--text-primary); font-weight:700; margin-bottom:24px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Companies
+    </a>
+
+    <div class="jt-card">
+      <h1 style="font-size:1.5rem; margin-bottom:24px;">{{ action }} Company</h1>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="comp-name">Company Name</label>
+          <input class="jt-form-control" type="text" name="name" id="comp-name" value="{{ company.name|default:'' }}" placeholder="ABC Technologies" required>
+        </div>
+        <div class="jt-form-row">
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="comp-industry">Industry</label>
+            <input class="jt-form-control" type="text" name="industry" id="comp-industry" value="{{ company.industry|default:'' }}" placeholder="Information Technology">
+          </div>
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="comp-location">Location</label>
+            <input class="jt-form-control" type="text" name="location" id="comp-location" value="{{ company.location|default:'' }}" placeholder="Chennai">
+          </div>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="comp-website">Website</label>
+          <input class="jt-form-control" type="url" name="website" id="comp-website" value="{{ company.website|default:'' }}" placeholder="https://example.com">
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="comp-desc">Description</label>
+          <textarea class="jt-form-control" name="description" id="comp-desc" rows="4" placeholder="Company description...">{{ company.description|default:'' }}</textarea>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="comp-logo">Logo URL</label>
+          <input class="jt-form-control" type="url" name="logo" id="comp-logo" value="{{ company.logo|default:'' }}" placeholder="https://example.com/logo.png">
+        </div>
+        <button type="submit" class="jt-btn jt-btn-primary jt-btn-block jt-btn-lg">{{ action }} Company</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

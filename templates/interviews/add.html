@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Add Interview — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container" style="max-width:640px;">
+    <a href="/applications/{{ application.id }}/" style="display:inline-flex; align-items:center; gap:6px; font-size:0.875rem; color:var(--text-primary); font-weight:700; margin-bottom:24px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Application
+    </a>
+
+    <div class="jt-card">
+      <h1 style="font-size:1.5rem; margin-bottom:8px;">Add Interview Details</h1>
+      {% if job %}<p style="color:var(--text-primary); font-weight:700; margin-bottom:24px;">{{ job.title }}</p>{% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="jt-form-row">
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="iv-date">Date</label>
+            <input class="jt-form-control" type="date" name="date" id="iv-date" required>
+          </div>
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="iv-time">Time</label>
+            <input class="jt-form-control" type="time" name="time" id="iv-time" required>
+          </div>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="iv-type">Interview Type</label>
+          <select class="jt-form-control" name="type" id="iv-type">
+            <option value="online">Online</option>
+            <option value="in-person">In-Person</option>
+            <option value="phone">Phone</option>
+          </select>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="iv-link">Meeting Link</label>
+          <input class="jt-form-control" type="url" name="meeting_link" id="iv-link" placeholder="https://meet.google.com/...">
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="iv-location">Location</label>
+          <input class="jt-form-control" type="text" name="location" id="iv-location" placeholder="Office address or online">
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="iv-notes">Notes</label>
+          <textarea class="jt-form-control" name="notes" id="iv-notes" rows="4" placeholder="Preparation notes, topics to review..."></textarea>
+        </div>
+        <button type="submit" class="jt-btn jt-btn-primary jt-btn-block jt-btn-lg">Save Interview</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

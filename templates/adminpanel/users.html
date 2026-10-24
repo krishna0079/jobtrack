@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users — JobTrack Admin{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Users</h1>
+        <p class="jt-section-subtitle">{{ users|length }} registered user{{ users|length|pluralize }}</p>
+      </div>
+      <a href="/admin-panel/dashboard/" class="jt-btn jt-btn-ghost jt-btn-sm">Back to Dashboard</a>
+    </div>
+
+    {% if users %}
+    <div class="jt-table-wrapper">
+      <table class="jt-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Registered</th>
+            <th>Provider</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td style="font-weight:600;">{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td><span class="jt-badge {% if u.role == 'admin' %}jt-badge--interview{% else %}jt-badge--applied{% endif %}">{{ u.role|title }}</span></td>
+            <td>{{ u.created_at_display|default:"—" }}</td>
+            <td>{{ u.auth_provider|default:"local"|title }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="jt-empty">
+      <h3>No users found</h3>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

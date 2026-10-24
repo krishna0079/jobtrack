@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Interview: {{ interview.role }} — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container" style="max-width: 800px;">
+    <a href="/interviews/" style="display:inline-flex; align-items:center; gap:6px; font-size:0.875rem; color:var(--text-primary); font-weight:700; margin-bottom:24px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Interviews
+    </a>
+
+    <div class="jt-card" style="margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;">
+        <div>
+          <h1 style="font-size:1.5rem; margin-bottom:4px;">{{ interview.role }}</h1>
+          <p style="color:var(--primary); font-weight:700;">{{ interview.company }}</p>
+        </div>
+        <span class="jt-badge jt-badge--interview">{{ interview.type|title }}</span>
+      </div>
+
+      <div class="jt-profile-field">
+        <span class="jt-profile-field-label">Date</span>
+        <span class="jt-profile-field-value">{{ interview.date_display|default:interview.date }}</span>
+      </div>
+      <div class="jt-profile-field">
+        <span class="jt-profile-field-label">Time</span>
+        <span class="jt-profile-field-value">{{ interview.time }}</span>
+      </div>
+      <div class="jt-profile-field">
+        <span class="jt-profile-field-label">Type</span>
+        <span class="jt-profile-field-value">{{ interview.type|title }}</span>
+      </div>
+      {% if interview.meeting_link %}
+      <div class="jt-profile-field">
+        <span class="jt-profile-field-label">Meeting Link</span>
+        <span class="jt-profile-field-value"><a href="{{ interview.meeting_link }}" target="_blank">{{ interview.meeting_link|truncatechars:60 }}</a></span>
+      </div>
+      {% endif %}
+      {% if interview.location %}
+      <div class="jt-profile-field">
+        <span class="jt-profile-field-label">Location</span>
+        <span class="jt-profile-field-value">{{ interview.location }}</span>
+      </div>
+      {% endif %}
+      {% if interview.notes %}
+      <div style="margin-top:20px;">
+        <h3 style="font-size:1rem; margin-bottom:8px;">Preparation Notes</h3>
+        <p style="color:var(--text-primary); font-weight:700; font-size:0.875rem; line-height:1.7;">{{ interview.notes|linebreaksbr }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Edit Form -->
+    <div class="jt-card">
+      <h3 style="margin-bottom:16px;">Edit Interview</h3>
+      <form method="POST" action="/interviews/{{ interview.id }}/edit/">
+        {% csrf_token %}
+        <div class="jt-form-row">
+          <div class="jt-form-group">
+            <label class="jt-form-label">Date</label>
+            <input class="jt-form-control" type="date" name="date" value="{{ interview.date|date:'Y-m-d' }}" required>
+          </div>
+          <div class="jt-form-group">
+            <label class="jt-form-label">Time</label>
+            <input class="jt-form-control" type="time" name="time" value="{{ interview.time }}">
+          </div>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label">Type</label>
+          <select class="jt-form-control" name="type">
+            <option value="online" {% if interview.type == 'online' %}selected{% endif %}>Online</option>
+            <option value="in-person" {% if interview.type == 'in-person' %}selected{% endif %}>In-Person</option>
+            <option value="phone" {% if interview.type == 'phone' %}selected{% endif %}>Phone</option>
+          </select>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label">Meeting Link</label>
+          <input class="jt-form-control" type="url" name="meeting_link" value="{{ interview.meeting_link }}">
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label">Location</label>
+          <input class="jt-form-control" type="text" name="location" value="{{ interview.location }}">
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label">Notes</label>
+          <textarea class="jt-form-control" name="notes" rows="3">{{ interview.notes }}</textarea>
+        </div>
+        <div style="display:flex; gap:12px;">
+          <button type="submit" class="jt-btn jt-btn-primary" style="flex:1;">Save Changes</button>
+          <form method="POST" action="/interviews/{{ interview.id }}/delete/" style="flex:0;">
+            {% csrf_token %}
+            <button type="submit" class="jt-btn jt-btn-danger" data-confirm="Delete this interview?">Delete</button>
+          </form>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

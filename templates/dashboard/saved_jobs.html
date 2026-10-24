@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Saved Jobs — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Saved Jobs</h1>
+        <p class="jt-section-subtitle">Jobs you've bookmarked for later</p>
+      </div>
+    </div>
+
+    {% if saved_jobs %}
+    <div class="jt-job-grid">
+      {% for job in saved_jobs %}
+      <div class="jt-job-card">
+        <div class="jt-job-card-header">
+          <div>
+            <div class="jt-job-title">{{ job.title }}</div>
+            <div class="jt-job-company">{{ job.company_name }}</div>
+          </div>
+          <span class="jt-badge jt-badge--{{ job.status|default:'active' }}">{{ job.status|default:"Active"|title }}</span>
+        </div>
+        <div class="jt-job-meta">
+          <span class="jt-job-meta-item">{{ job.location|default:"Remote" }}</span>
+          <span class="jt-job-meta-item">{{ job.job_type|default:"Full Time" }}</span>
+          {% if job.salary %}<span class="jt-job-meta-item">{{ job.salary }}</span>{% endif %}
+        </div>
+        {% if job.skills %}
+        <div class="jt-job-skills">
+          {% for skill in job.skills|slice:":4" %}
+          <span class="jt-skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="jt-job-actions">
+          <a href="/jobs/{{ job.id }}/" class="jt-btn jt-btn-outline jt-btn-sm" style="flex:1;">View Job</a>
+          <form method="POST" action="/jobs/{{ job.id }}/unsave/" style="flex:1;">
+            {% csrf_token %}
+            <button type="submit" class="jt-btn jt-btn-ghost jt-btn-sm jt-btn-block" data-confirm="Remove this job from saved list?">Remove</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="jt-empty">
+      <h3>No saved jobs yet</h3>
+      <p>Browse jobs and save the ones you're interested in for quick access later.</p>
+      <a href="/jobs/" class="jt-btn jt-btn-primary">Browse Jobs</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

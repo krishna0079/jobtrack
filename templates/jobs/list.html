@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}{% if search_query %}Search: {{ search_query }} — {% endif %}Jobs — JobTrack{% endblock %}
+
+{% block content %}
+<!-- Search Hero -->
+<div class="jt-page-hero">
+  <div class="jt-container">
+    <h1>{% if search_query %}Results for "{{ search_query }}"{% else %}Find Your Next Opportunity{% endif %}</h1>
+    <p>{{ total }} job{{ total|pluralize }} available</p>
+    <form action="/jobs/search/" method="GET" style="margin-top: 24px;">
+      <div class="jt-search-bar">
+        <input type="text" name="q" id="job-search-input" placeholder="Search by title, skill, company, or location..." value="{{ search_query|default:'' }}">
+        <button type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="jt-page" style="padding-top: 0;">
+  <div class="jt-container">
+    <!-- Filters -->
+    {% if not search_query %}
+    <div class="jt-filter-panel">
+      <form method="GET" action="/jobs/">
+        <div class="jt-filter-row">
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="filter-location">Location</label>
+            <select class="jt-form-control" name="location" id="filter-location">
+              <option value="">All Locations</option>
+              {% for loc in locations %}
+              <option value="{{ loc }}" {% if current_filters.location == loc %}selected{% endif %}>{{ loc }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="filter-type">Job Type</label>
+            <select class="jt-form-control" name="job_type" id="filter-type">
+              <option value="">All Types</option>
+              {% for jt in job_types %}
+              <option value="{{ jt }}" {% if current_filters.job_type == jt %}selected{% endif %}>{{ jt }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="filter-exp">Experience</label>
+            <select class="jt-form-control" name="experience" id="filter-exp">
+              <option value="">All Levels</option>
+              {% for exp in experiences %}
+              <option value="{{ exp }}" {% if current_filters.experience == exp %}selected{% endif %}>{{ exp }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="jt-form-group">
+            <label class="jt-form-label" for="filter-skill">Skill</label>
+            <select class="jt-form-control" name="category" id="filter-skill">
+              <option value="">All Skills</option>
+              {% for cat in categories %}
+              <option value="{{ cat }}" {% if current_filters.category == cat %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="jt-form-group" style="display:flex; align-items:flex-end; gap: 8px;">
+            <button type="submit" class="jt-btn jt-btn-primary">Apply Filters</button>
+            <a href="/jobs/" class="jt-btn jt-btn-ghost">Reset</a>
+          </div>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Job Grid -->
+    {% if jobs %}
+    <div class="jt-job-grid">
+      {% for job in jobs %}
+      <a href="/jobs/{{ job.id }}/" style="text-decoration: none;">
+        <div class="jt-job-card jt-card-clickable">
+          <div class="jt-job-card-header">
+            <div>
+              <div class="jt-job-title">{{ job.title }}</div>
+              <div class="jt-job-company">{{ job.company_name }}</div>
+            </div>
+            {% if job.id in saved_ids %}
+            <span class="jt-badge jt-badge--applied" style="font-size:0.7rem;">Saved</span>
+            {% endif %}
+          </div>
+          <div class="jt-job-meta">
+            <span class="jt-job-meta-item">{{ job.location|default:"Remote" }}</span>
+            <span class="jt-job-meta-item">{{ job.job_type|default:"Full Time" }}</span>
+            <span class="jt-job-meta-item">{{ job.experience|default:"Any" }}</span>
+            {% if job.salary %}<span class="jt-job-meta-item">{{ job.salary }}</span>{% endif %}
+          </div>
+          {% if job.skills %}
+          <div class="jt-job-skills">
+            {% for skill in job.skills|slice:":5" %}
+            <span class="jt-skill-tag">{{ skill }}</span>
+            {% endfor %}
+            {% if job.skills|length > 5 %}
+            <span class="jt-skill-tag" style="background:transparent; color:var(--text-primary); font-weight:700;">+{{ job.skills|length|add:"-5" }} more</span>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="jt-pagination">
+      {% if page > 1 %}
+      <a href="?page={{ page|add:"-1" }}{% if current_filters.location %}&location={{ current_filters.location }}{% endif %}{% if current_filters.job_type %}&job_type={{ current_filters.job_type }}{% endif %}{% if current_filters.experience %}&experience={{ current_filters.experience }}{% endif %}{% if current_filters.category %}&category={{ current_filters.category }}{% endif %}">Prev</a>
+      {% endif %}
+
+      {% for p in page_range %}
+      {% if p == page %}
+      <span class="active">{{ p }}</span>
+      {% else %}
+      <a href="?page={{ p }}{% if current_filters.location %}&location={{ current_filters.location }}{% endif %}{% if current_filters.job_type %}&job_type={{ current_filters.job_type }}{% endif %}{% if current_filters.experience %}&experience={{ current_filters.experience }}{% endif %}{% if current_filters.category %}&category={{ current_filters.category }}{% endif %}">{{ p }}</a>
+      {% endif %}
+      {% endfor %}
+
+      {% if page < total_pages %}
+      <a href="?page={{ page|add:"1" }}{% if current_filters.location %}&location={{ current_filters.location }}{% endif %}{% if current_filters.job_type %}&job_type={{ current_filters.job_type }}{% endif %}{% if current_filters.experience %}&experience={{ current_filters.experience }}{% endif %}{% if current_filters.category %}&category={{ current_filters.category }}{% endif %}">Next</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="jt-empty">
+      <h3>No jobs found</h3>
+      <p>{% if search_query %}Try different keywords or browse all available jobs.{% else %}No jobs match your filters. Try adjusting your criteria.{% endif %}</p>
+      <a href="/jobs/" class="jt-btn jt-btn-primary">View All Jobs</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Application Details — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <a href="/applications/" style="display:inline-flex; align-items:center; gap:6px; font-size:0.875rem; color:var(--text-primary); font-weight:700; margin-bottom:24px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Applications
+    </a>
+
+    <div class="jt-grid-2" style="grid-template-columns: 2fr 1fr;">
+      <div>
+        <div class="jt-card" style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+            <div>
+              <h1 style="font-size:1.5rem; margin-bottom:4px;">{{ application.job.title|default:"Position" }}</h1>
+              <p style="color:var(--primary); font-weight:700;">{{ application.company_name|default:"Company" }}</p>
+            </div>
+            <span class="jt-badge jt-badge--{{ application.status }}">{{ application.status|title }}</span>
+          </div>
+
+          {% if application.job %}
+          <div class="jt-detail-meta" style="margin-bottom:20px;">
+            <span>{{ application.job.location|default:"" }}</span>
+            <span>{{ application.job.job_type|default:"" }}</span>
+            <span>{{ application.job.experience|default:"" }}</span>
+          </div>
+          {% endif %}
+
+          <div style="margin-bottom:16px;">
+            <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700; text-transform:uppercase; margin-bottom:4px;">Applied Date</div>
+            <div style="font-weight:600;">{{ application.applied_date_display }}</div>
+          </div>
+
+          {% if application.notes %}
+          <div>
+            <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700; text-transform:uppercase; margin-bottom:4px;">Notes</div>
+            <p style="color:var(--text-primary); font-weight:700; font-size:0.875rem;">{{ application.notes }}</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Interview Info -->
+        {% if interview %}
+        <div class="jt-card">
+          <h3 style="margin-bottom:16px;">Interview Details</h3>
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Date</span>
+            <span class="jt-profile-field-value">{{ interview.date_display|default:interview.date }}</span>
+          </div>
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Time</span>
+            <span class="jt-profile-field-value">{{ interview.time }}</span>
+          </div>
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Type</span>
+            <span class="jt-profile-field-value">{{ interview.type|title }}</span>
+          </div>
+          {% if interview.meeting_link %}
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Meeting Link</span>
+            <span class="jt-profile-field-value"><a href="{{ interview.meeting_link }}" target="_blank">{{ interview.meeting_link|truncatechars:50 }}</a></span>
+          </div>
+          {% endif %}
+          {% if interview.notes %}
+          <div class="jt-profile-field">
+            <span class="jt-profile-field-label">Notes</span>
+            <span class="jt-profile-field-value">{{ interview.notes }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% elif application.status == 'interview' or application.status == 'applied' %}
+        <div class="jt-card" style="text-align:center; padding:32px;">
+          <p style="color:var(--text-primary); font-weight:700; margin-bottom:16px;">No interview scheduled for this application.</p>
+          <a href="/interviews/add/{{ application.id }}/" class="jt-btn jt-btn-primary jt-btn-sm">Add Interview Details</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar Actions -->
+      <div>
+        <div class="jt-card" style="position:sticky; top:96px;">
+          <h3 style="margin-bottom:16px;">Update Status</h3>
+          <form method="POST" action="/applications/{{ application.id }}/update/">
+            {% csrf_token %}
+            <div class="jt-form-group">
+              <select class="jt-form-control" name="status">
+                <option value="applied" {% if application.status == 'applied' %}selected{% endif %}>Applied</option>
+                <option value="interview" {% if application.status == 'interview' %}selected{% endif %}>Interview</option>
+                <option value="selected" {% if application.status == 'selected' %}selected{% endif %}>Selected</option>
+                <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                <option value="withdrawn" {% if application.status == 'withdrawn' %}selected{% endif %}>Withdrawn</option>
+              </select>
+            </div>
+            <div class="jt-form-group">
+              <label class="jt-form-label">Notes</label>
+              <textarea class="jt-form-control" name="notes" rows="3" placeholder="Add notes...">{{ application.notes }}</textarea>
+            </div>
+            <button type="submit" class="jt-btn jt-btn-primary jt-btn-block" style="margin-bottom:12px;">Update</button>
+          </form>
+
+          {% if application.job %}
+          <a href="/jobs/{{ application.job.id }}/" class="jt-btn jt-btn-outline jt-btn-block" style="margin-bottom:12px;">View Job</a>
+          {% endif %}
+
+          {% if not interview %}
+          <a href="/interviews/add/{{ application.id }}/" class="jt-btn jt-btn-outline jt-btn-block" style="margin-bottom:12px;">Add Interview</a>
+          {% endif %}
+
+          <form method="POST" action="/applications/{{ application.id }}/delete/">
+            {% csrf_token %}
+            <button type="submit" class="jt-btn jt-btn-danger jt-btn-block" data-confirm="Delete this application? This cannot be undone.">Delete Application</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

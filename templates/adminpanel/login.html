@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — JobTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  {% if messages %}
+  <div class="jt-alerts" role="alert">
+    {% for message in messages %}
+    <div class="jt-alert jt-alert--{{ message.tags }}">
+      <span>{{ message }}</span>
+      <button class="jt-alert-close" aria-label="Close">&times;</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="jt-auth-page" style="background:var(--bg-dark);">
+    <div class="jt-auth-card">
+      <a href="/" class="jt-navbar-brand" style="justify-content: center; margin-bottom: 24px;">Job<span>Track</span></a>
+      <h1 class="jt-auth-title" style="font-size: 1.5rem;">Admin Login</h1>
+      <p class="jt-auth-subtitle">Access the administration panel</p>
+
+      <form method="POST" novalidate>
+        {% csrf_token %}
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="admin-email">Email</label>
+          <input class="jt-form-control" type="email" name="email" id="admin-email" placeholder="admin@jobtrack.com" required autofocus>
+        </div>
+        <div class="jt-form-group">
+          <label class="jt-form-label" for="admin-password">Password</label>
+          <input class="jt-form-control" type="password" name="password" id="admin-password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="jt-btn jt-btn-primary jt-btn-block jt-btn-lg">Sign In</button>
+      </form>
+
+      <p style="text-align: center; margin-top: 24px; font-size: 0.8125rem; color: var(--text-primary); font-weight:700;">
+        <a href="/login/">Back to user login</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

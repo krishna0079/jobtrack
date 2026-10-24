@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Manage Jobs — JobTrack Admin{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Jobs</h1>
+        <p class="jt-section-subtitle">{{ jobs|length }} job{{ jobs|length|pluralize }} total</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="/admin-panel/jobs/auto-fetch/" class="jt-btn jt-btn-accent">Auto-Fetch Jobs</a>
+        <a href="/admin-panel/jobs/add/" class="jt-btn jt-btn-primary">Add Job</a>
+        <a href="/admin-panel/dashboard/" class="jt-btn jt-btn-ghost jt-btn-sm">Back</a>
+      </div>
+    </div>
+
+    {% if jobs %}
+    <div class="jt-table-wrapper">
+      <table class="jt-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Applications</th>
+            <th>Posted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for j in jobs %}
+          <tr>
+            <td style="font-weight:600;">{{ j.title }}</td>
+            <td>{{ j.company_name }}</td>
+            <td>{{ j.location|default:"—" }}</td>
+            <td><span class="jt-badge jt-badge--{{ j.status }}">{{ j.status|title }}</span></td>
+            <td>{{ j.app_count }}</td>
+            <td>{{ j.created_at_display|default:"—" }}</td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <a href="/admin-panel/jobs/{{ j.id }}/edit/" class="jt-btn jt-btn-ghost jt-btn-sm">Edit</a>
+                <form method="POST" action="/admin-panel/jobs/{{ j.id }}/delete/">
+                  {% csrf_token %}
+                  <button type="submit" class="jt-btn jt-btn-danger jt-btn-sm" data-confirm="Delete this job?">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="jt-empty">
+      <h3>No jobs yet</h3>
+      <p>Add companies first, then create job listings.</p>
+      <a href="/admin-panel/jobs/add/" class="jt-btn jt-btn-primary">Add First Job</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

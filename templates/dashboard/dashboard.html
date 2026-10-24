@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — JobTrack{% endblock %}
+
+{% block content %}
+<div class="jt-page">
+  <div class="jt-container">
+    <div class="jt-section-header">
+      <div>
+        <h1 class="jt-section-title">Welcome, {{ request.session.user_name }}</h1>
+        <p class="jt-section-subtitle">Here's your job search overview</p>
+      </div>
+      <a href="/jobs/" class="jt-btn jt-btn-primary">Browse Jobs</a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="jt-stats-grid">
+      <div class="jt-stat-card jt-stat-card--primary">
+        <div class="jt-stat-value">{{ total_applications }}</div>
+        <div class="jt-stat-label">Total Applications</div>
+      </div>
+      <div class="jt-stat-card jt-stat-card--info">
+        <div class="jt-stat-value">{{ stats.applied }}</div>
+        <div class="jt-stat-label">Applied</div>
+      </div>
+      <div class="jt-stat-card jt-stat-card--secondary">
+        <div class="jt-stat-value">{{ stats.interview }}</div>
+        <div class="jt-stat-label">Interviews</div>
+      </div>
+      <div class="jt-stat-card jt-stat-card--accent">
+        <div class="jt-stat-value">{{ stats.selected }}</div>
+        <div class="jt-stat-label">Selected</div>
+      </div>
+      <div class="jt-stat-card jt-stat-card--danger">
+        <div class="jt-stat-value">{{ stats.rejected }}</div>
+        <div class="jt-stat-label">Rejected</div>
+      </div>
+      <div class="jt-stat-card jt-stat-card--warning">
+        <div class="jt-stat-value">{{ saved_count }}</div>
+        <div class="jt-stat-label">Saved Jobs</div>
+      </div>
+    </div>
+
+    <div class="jt-grid-2">
+      <!-- Upcoming Interviews -->
+      <div>
+        <h2 style="font-size: 1.125rem; margin-bottom: 16px;">Upcoming Interviews</h2>
+        {% if upcoming_interviews %}
+          {% for iv in upcoming_interviews %}
+          <div class="jt-interview-card">
+            <div style="display:flex; align-items:center; gap:16px; flex:1;">
+              <div class="jt-interview-date">
+                <div class="jt-interview-date-day">{{ iv.date_display|slice:":2" }}</div>
+                <div class="jt-interview-date-month">{{ iv.date_display|slice:"3:" }}</div>
+              </div>
+              <div>
+                <div style="font-weight:600; font-size:0.9375rem;">{{ iv.role }}</div>
+                <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700;">{{ iv.company }}</div>
+                <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700;">{{ iv.time }} &middot; {{ iv.type|title }}</div>
+              </div>
+            </div>
+            <a href="/interviews/{{ iv.id }}/" class="jt-btn jt-btn-outline jt-btn-sm">View</a>
+          </div>
+          {% endfor %}
+        {% else %}
+        <div class="jt-card" style="text-align:center; padding: 40px;">
+          <p style="color:var(--text-primary); font-weight:700;">No upcoming interviews scheduled.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Recent Applications -->
+      <div>
+        <h2 style="font-size: 1.125rem; margin-bottom: 16px;">Recent Applications</h2>
+        {% if recent_applications %}
+          {% for app in recent_applications %}
+          <a href="/applications/{{ app.id }}/" style="text-decoration:none;">
+            <div class="jt-card" style="margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; padding:16px 20px;">
+              <div>
+                <div style="font-weight:600; font-size:0.9375rem; color:var(--text-primary);">{{ app.job_title }}</div>
+                <div style="font-size:0.8125rem; color:var(--text-primary); font-weight:700;">{{ app.company_name }} &middot; {{ app.applied_date_display }}</div>
+              </div>
+              <span class="jt-badge jt-badge--{{ app.status }}">{{ app.status|title }}</span>
+            </div>
+          </a>
+          {% endfor %}
+          <a href="/applications/" style="font-size:0.875rem; font-weight:600;">View all applications</a>
+        {% else %}
+        <div class="jt-card" style="text-align:center; padding: 40px;">
+          <p style="color:var(--text-primary); font-weight:700;">No applications yet. Start by browsing jobs.</p>
+          <a href="/jobs/" class="jt-btn jt-btn-primary jt-btn-sm" style="margin-top:12px;">Find Jobs</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
